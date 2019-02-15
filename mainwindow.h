@@ -41,6 +41,7 @@ private slots:
     void getCalibrationParam(void);
     void getCalibrationParamVid(void);
     void applyUndistort(void);
+    void getDepthMap(void);
 
 private:
     void createMenu(void);
@@ -59,6 +60,7 @@ private:
     QAction* calibrAct;
     QAction* calibrActVid;
     QAction* undistAct;
+    QAction* depthAct;
 
     QTabWidget* tabWidget;
 

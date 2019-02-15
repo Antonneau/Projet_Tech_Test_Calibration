@@ -24,6 +24,27 @@ namespace CvMat {
         return ( copy ) ? img.copy() : img ;
     }
 
+    cv::Mat toDisparity(cv::Mat matL, cv::Mat matR, Convert::Mode mode) {
+        cv::Mat gLeft, gRight, disp, disp8;
+
+        cv::cvtColor(matL, gLeft, CV_BGR2GRAY);
+        cv::cvtColor(matR, gRight, CV_BGR2GRAY);
+
+
+        if(mode == Convert::Mode::SBM ){
+            cv::Ptr<cv::StereoBM> sbm = cv::StereoBM::create(0,21);
+            sbm->compute(gLeft, gRight, disp);
+        } else if(mode == Convert::Mode::SGBM){
+            cv::Ptr<cv::StereoSGBM> sgbm = cv::StereoSGBM::create(-64,192,5,600,2400,10,4,1,150,2,cv::StereoSGBM::MODE_SGBM);
+            sgbm->compute(gLeft, gRight, disp);
+        }
+
+
+        cv::normalize(disp, disp8, 0, 255, CV_MINMAX, CV_8U);
+
+        return disp8;
+    }
+
 } // end namespace CvMat
 
 namespace qImage {

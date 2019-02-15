@@ -28,10 +28,12 @@ LIBS            += -L/opt/local/stow/opencv-3.4.3/include/opencv2 -lopencv_core 
 SOURCES += main.cpp\
         mainwindow.cpp \
     utils.cpp \
-    calibration.cpp
+    calibration.cpp \
+    depthmap.cpp
 
 HEADERS  += mainwindow.h \
     utils.h \
-    calibration.h
+    calibration.h \
+    depthmap.h
 
 FORMS    += mainwindow.ui

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "utils.h"
 #include "calibration.h"
+#include "depthmap.h"
 
 using namespace std;
 
@@ -55,6 +56,10 @@ void MainWindow::createAction() {
     this->undistAct = new QAction("Appliquer la calibration", this);
     connect(this->undistAct, SIGNAL(triggered()), this, SLOT(applyUndistort()));
 
+    // Get Depth Map
+    this->depthAct = new QAction("Carte de profondeurs (video stereo)", this);
+    connect(this->depthAct, SIGNAL(triggered()), this, SLOT(getDepthMap()));
+
     this->aboutAct = new QAction("Infos", this);
     connect(this->aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 }
@@ -67,6 +72,7 @@ void MainWindow::createMenu() {
     this->fileMenu->addAction(calibrAct);
     this->fileMenu->addAction(calibrActVid);
     this->fileMenu->addAction(undistAct);
+    this->fileMenu->addAction(depthAct);
     this->fileMenu->addSeparator();
     this->fileMenu->addAction(exitAppAct);
 
@@ -192,6 +198,31 @@ void MainWindow::applyUndistort(){
         }
     }
     calibration::undistort(fileList, this->intrinsic, this->distcoeffs);
+}
+
+void MainWindow::getDepthMap(){
+    QStringList fileList = QFileDialog::getOpenFileNames(this,
+                                                "Sélectionnez des images",
+                                                "Images/",
+                                                "Image (*.png *.jpg)",
+                                                NULL,
+                                                QFileDialog::DontUseNativeDialog | QFileDialog::ReadOnly
+                                                );
+
+    if ( fileList.isEmpty() ) return;
+
+    for(int i = 0; i < fileList.size(); i++){
+
+        if ( !this->picture->load(fileList.at(i)) ) {
+            QMessageBox::critical(this, "Erreur", "Impossible d'ouvrir cette image");
+            return;
+        }
+        if ( this->picture->isNull() ) {
+            QMessageBox::critical(this, "Erreur", "Impossible d'ouvrir une image vide");
+            return;
+        }
+    }
+    depthmap::Depthmap(fileList, fileList.size(), 9, 6, false);
 }
 
 cv::Mat toCvMat(QImage *img, bool copy) {
